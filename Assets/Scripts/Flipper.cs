@@ -5,17 +5,17 @@ public class Flipper : MonoBehaviour
     public enum Side {LEFT, RIGHT}
     
     public Side side;
-    private float restAngle = -115f;
-    private float angleDiff = 60f;
-    private float speed = 20f;
+    public float torque = 25f;
     private bool isActive = false;
 
     private float targetAngle;
 
+    private Rigidbody rb;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        this.targetAngle = restAngle;
+        rb = gameObject.GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -31,20 +31,20 @@ public class Flipper : MonoBehaviour
 
     private void HandleFlip()
     {
+        float direction = 1;
+
+        if(side == Side.RIGHT)
+        {
+            direction *= -1;
+        }
+
         if (isActive)
         {
-            targetAngle = restAngle + angleDiff;
-        } else
-        {
-            targetAngle = restAngle;
+            direction *= -1;
         }
 
-        float sideModifier = 1f;
-        if(side == Side.LEFT)
-        {
-            sideModifier = -1f;
-        }
+        Vector3 currentTorque = new Vector3(0, torque * direction, 0);
 
-        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, targetAngle * sideModifier, 0), speed * Time.deltaTime);
+        rb.angularVelocity = currentTorque;
     }
 }
