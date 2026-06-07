@@ -9,12 +9,12 @@ public class Plunger : MonoBehaviour
     private Vector3 scale;
 
     private int steps = 5;
-    private float startPos;
-    private float currentPos;
-    private float pullStopPercentage = 0.9f;
+    private Vector3 startPos;
+    private Vector3 currentPos;
+    private float pullStopPercentage = 0.7f;
 
-    public float pullSpeed = 1f;
-    public float launchSpeed = .5f;
+    private float pullSpeed = .2f;
+    private float launchSpeed = 1.5f;
     private float speed;
 
     private bool ready;
@@ -24,7 +24,7 @@ public class Plunger : MonoBehaviour
 
     private float pullValueRaw;
     private float pullValue;
-    private float targetDistance;
+    private float percentPulled;
 
     private BoxCollider boxCollider;
     private Rigidbody rb;
@@ -44,7 +44,7 @@ public class Plunger : MonoBehaviour
         scale = gameObject.transform.localScale;
 
         currentTime = 0;
-        startPos = transform.position.x;
+        startPos = transform.localPosition;
     }
 
     // Update is called once per frame
@@ -56,70 +56,50 @@ public class Plunger : MonoBehaviour
 
     private void HandlePull()
     {
+        // Read input
         pullValueRaw = -1 * pullAction.ReadValue<Vector2>().y;
-
         if(pullValueRaw < 0) pullValueRaw = 0;
 
-        // Determine max distance (for now, just the length of plunger)
-        float maxDistance = boxCollider.size.z * gameObject.transform.localScale.z * pullStopPercentage;
-
-        // pullValue = mapping pullValueRaw to # of steps
+        // Pull value = raw input mapped to # of steps
         pullValue = (int) Math.Ceiling((decimal) (pullValueRaw * steps));
-
-        // targetDistance = mapping pullPower to actual maxDistance
-        targetDistance = pullValue/steps * maxDistance;
         
         // Pulling logic
-        if(pullValueRaw > 0 && !pulling)
-        {
-            pulling = true;
-        } else if (pullValueRaw <= 0){
-            pulling = false;
-        }
+        if(pullValueRaw > 0 && !pulling) pulling = true;
+        else pulling = false;
 
         // Timer logic
-        if (pulling)
-        {
-            currentTime += Time.deltaTime;
-        } else
-        {
-            currentTime = 0;
-        }
+        if (pulling)  currentTime += Time.deltaTime;
+        else currentTime = 0;
 
-        // When the joystick is let go and the plunger is primed, the ball is launched
-        if(primed && pullValueRaw == 0)
-        {
-            Launch();
-        }
+        // Launching
+        if(primed && pullValueRaw == 0) Launch();
     }
 
     private void HandleMove()
     {
-        currentPos = transform.position.x;
+        currentPos = transform.localPosition;
 
-        // Plunger is ready after launching and returning to position 0 (for now)
-        if(currentPos == startPos && !pulling) ready = true;
+        // Primed position
+        percentPulled = pullValue/steps;
+        float maxDistance = boxCollider.size.z * gameObject.transform.localScale.z * pullStopPercentage;
+        float primedPos = startPos.x + (percentPulled * maxDistance);
 
-        // Calculate "primed" position
-        float targetPos = startPos + targetDistance;
+        // Determine if ready to pull or primed (ready to launch)
+        if(currentPos.x == startPos.x && !pulling) ready = true;
+        if(currentPos.x >= primedPos && pulling) primed = true;
 
-        // Plunger is primed when it reaches the target position
-        if(pulling && transform.position.x >= targetPos)
-        {
-            primed = true;
-        }
+        // Set plunger move speed
+        if(ready) speed = pullSpeed/scale.z * percentPulled;
 
-        // Pull speed scale
-        if(ready) speed = pullSpeed/scale.z;
-
-        transform.position = Vector3.MoveTowards(transform.position, new Vector3(targetPos, 1, transform.position.z), speed);
+        // Move
+        transform.localPosition = Vector3.MoveTowards(currentPos, new Vector3(primedPos, 1, currentPos.z), speed);
     }
 
     private void Launch()
     {
         primed = false;
         ready = false;
-        speed = launchSpeed/scale.z;
+        speed = launchSpeed/scale.z * percentPulled;
         Debug.Log("Launched!");
     }
 
@@ -155,14 +135,9 @@ public class Plunger : MonoBehaviour
         return pullValue;
     }
 
-    public float GetTargetDistance()
-    {
-        return targetDistance;
-    }
-
     public float GetCurrentPos()
     {
-        return currentPos;
+        return currentPos.x;
     }
 
     public float GetSpeed()

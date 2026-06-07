@@ -27,7 +27,6 @@ public class DebugManager : MonoBehaviour
         debugText.text += $"primed: {plunger.IsPrimed()}\n";
         debugText.text += $"pullValueRaw: {plunger.GetPullValueRaw()}\n";
         debugText.text += $"pullValue: {plunger.GetPullValue()}\n";
-        debugText.text += $"targetDistance: {plunger.GetTargetDistance()}\n";
         debugText.text += $"speed: {plunger.GetSpeed()}";
     }
 }
