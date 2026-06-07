@@ -6,16 +6,17 @@ public class Flipper : MonoBehaviour
     
     public Side side;
     public float torque = 25f;
+
     private bool isActive = false;
 
-    private float targetAngle;
-
     private Rigidbody rb;
+    public FlipperController flipperController;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = gameObject.GetComponent<Rigidbody>();
+        flipperController.AddFlipper(this);
     }
 
     // Update is called once per frame
@@ -46,5 +47,10 @@ public class Flipper : MonoBehaviour
         Vector3 currentTorque = new Vector3(0, torque * direction, 0);
 
         rb.angularVelocity = currentTorque;
+    }
+
+    public Side GetSide()
+    {
+        return side;
     }
 }

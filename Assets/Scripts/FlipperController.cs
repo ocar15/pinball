@@ -1,10 +1,14 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public class FlipperController : MonoBehaviour
 {
     public Flipper flipperLeft;
     public Flipper flipperRight;
+
+    private List<Flipper> flippersLeft = new List<Flipper>();
+    private List<Flipper> flippersRight = new List<Flipper>();
 
     InputAction flipperLeftAction;
     InputAction flipperRightAction;
@@ -22,19 +26,37 @@ public class FlipperController : MonoBehaviour
         // Left
         if (flipperLeftAction.WasPerformedThisFrame())
         {
-            flipperLeft.setActive(true);
+            flippersLeft.ForEach(delegate(Flipper flipper)
+            {
+                flipper.setActive(true);
+            });
         } else if (flipperLeftAction.WasCompletedThisFrame())
         {
-            flipperLeft.setActive(false);
+            flippersLeft.ForEach(delegate(Flipper flipper)
+            {
+                flipper.setActive(false);
+            });
         }
 
         // Right
         if (flipperRightAction.WasPerformedThisFrame())
         {
-            flipperRight.setActive(true);
+            flippersRight.ForEach(delegate(Flipper flipper)
+            {
+                flipper.setActive(true);
+            });
         } else if (flipperRightAction.WasCompletedThisFrame())
         {
-            flipperRight.setActive(false);
+            flippersRight.ForEach(delegate(Flipper flipper)
+            {
+                flipper.setActive(false);
+            });
         }
+    }
+
+    public void AddFlipper(Flipper flipper)
+    {
+        if(flipper.GetSide() == Flipper.Side.LEFT) flippersLeft.Add(flipper);
+        else flippersRight.Add(flipper);
     }
 }

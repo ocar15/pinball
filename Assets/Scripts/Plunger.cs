@@ -103,8 +103,7 @@ public class Plunger : MonoBehaviour
         Debug.Log("Launched!");
     }
 
-
-
+    // Getters
     public bool IsReady()
     {
         return ready;
