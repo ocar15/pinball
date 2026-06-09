@@ -4,9 +4,6 @@ using System.Collections.Generic;
 
 public class FlipperController : MonoBehaviour
 {
-    public Flipper flipperLeft;
-    public Flipper flipperRight;
-
     private List<Flipper> flippersLeft = new List<Flipper>();
     private List<Flipper> flippersRight = new List<Flipper>();
 

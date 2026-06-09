@@ -1,4 +1,4 @@
-using UnityEngine;
+    using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 
@@ -13,8 +13,8 @@ public class Plunger : MonoBehaviour
     private Vector3 currentPos;
     private float pullStopPercentage = 0.7f;
 
-    private float pullSpeed = .2f;
-    private float launchSpeed = 1.5f;
+    public float pullSpeed;
+    public float launchSpeed;
     private float speed;
 
     private bool ready;
@@ -78,28 +78,31 @@ public class Plunger : MonoBehaviour
     private void HandleMove()
     {
         currentPos = transform.localPosition;
+        float length = boxCollider.size.z;
 
         // Primed position
         percentPulled = pullValue/steps;
-        float maxDistance = boxCollider.size.z * gameObject.transform.localScale.z * pullStopPercentage;
-        float primedPos = startPos.x + (percentPulled * maxDistance);
+        float maxDistance = length * pullStopPercentage;
+        float primedPos = startPos.z + (percentPulled * maxDistance);
 
         // Determine if ready to pull or primed (ready to launch)
-        if(currentPos.x == startPos.x && !pulling) ready = true;
-        if(currentPos.x >= primedPos && pulling) primed = true;
+        if(currentPos.z == startPos.z && !pulling) ready = true;
+        if(currentPos.z >= primedPos && pulling) primed = true;
 
         // Set plunger move speed
-        if(ready) speed = pullSpeed/scale.z * percentPulled;
+        if(ready) speed = pullSpeed * percentPulled;
+
+        float speedRaw = speed * Time.deltaTime;
 
         // Move
-        transform.localPosition = Vector3.MoveTowards(currentPos, new Vector3(primedPos, 1, currentPos.z), speed);
+        transform.localPosition = Vector3.MoveTowards(currentPos, new Vector3(startPos.x, startPos.y, primedPos), speedRaw);
     }
 
     private void Launch()
     {
         primed = false;
         ready = false;
-        speed = launchSpeed/scale.z * percentPulled;
+        speed = launchSpeed;
         Debug.Log("Launched!");
     }
 
