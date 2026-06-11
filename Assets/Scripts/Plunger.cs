@@ -4,19 +4,20 @@ using System;
 
 public class Plunger : MonoBehaviour
 {
+    
+
+
+    InputAction pullAction;
+    
+    private BoxCollider boxCollider;
+    private Rigidbody rb;
+    private ConfigurableJoint configJoint;
     [SerializeField] private DebugManager debugManager;
 
     private Vector3 scale;
+    private Vector3 startPosition;
 
-    private int steps = 5;
-    private Vector3 startPos;
-    private Vector3 currentPos;
-    private float pullStopPercentage = 0.7f;
-
-    public float pullSpeed;
-    public float launchSpeed;
-    private float speed;
-
+    private int steps = 6;
     private bool ready;
     private bool pulling;
     private bool primed;
@@ -24,13 +25,16 @@ public class Plunger : MonoBehaviour
 
     private float pullValueRaw;
     private float pullValue;
+    private float prevPullValue;
+    private Vector3 currentPosition;
     private float percentPulled;
 
-    private BoxCollider boxCollider;
-    private Rigidbody rb;
-    private ConfigurableJoint configJoint;
-
-    InputAction pullAction;
+    public float resistance = -20;
+    public float baseForce = 1;
+    private float pullForce;
+    private float returnForce;
+    private float displacement;
+    private float maxDistance;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -44,14 +48,18 @@ public class Plunger : MonoBehaviour
         scale = gameObject.transform.localScale;
 
         currentTime = 0;
-        startPos = transform.localPosition;
+        startPosition = transform.localPosition;
     }
 
     // Update is called once per frame
     void Update()
     {
         HandlePull();
-        HandleMove();
+    }
+
+    void FixedUpdate()
+    {
+        HandlePhysics();
     }
 
     private void HandlePull()
@@ -62,47 +70,64 @@ public class Plunger : MonoBehaviour
 
         // Pull value = raw input mapped to # of steps
         pullValue = (int) Math.Ceiling((decimal) (pullValueRaw * steps));
+        percentPulled = pullValue/steps;
         
         // Pulling logic
-        if(pullValueRaw > 0 && !pulling) pulling = true;
-        else pulling = false;
+        pulling = pullValue > 0;
 
         // Timer logic
         if (pulling)  currentTime += Time.deltaTime;
         else currentTime = 0;
 
         // Launching
-        if(primed && pullValueRaw == 0) Launch();
+        if(primed && pullValue == 0)
+        {
+            ready = false;
+            primed = false;
+            pulling = false;
+            Launch();
+        }
+
+        // Store pullValue
+        prevPullValue = pullValue;
     }
 
-    private void HandleMove()
+    private void HandlePhysics()
     {
-        currentPos = transform.localPosition;
-        float length = boxCollider.size.z;
+        // Get max distance
+        maxDistance = boxCollider.size.z;
 
-        // Primed position
-        percentPulled = pullValue/steps;
-        float maxDistance = length * pullStopPercentage;
-        float primedPos = startPos.z + (percentPulled * maxDistance);
+        // Get displacement
+        currentPosition = transform.localPosition;
+        displacement = currentPosition.z - startPosition.z;
 
-        // Determine if ready to pull or primed (ready to launch)
-        if(currentPos.z == startPos.z && !pulling) ready = true;
-        if(currentPos.z >= primedPos && pulling) primed = true;
+        // Calculate forces
+        pullForce = pullValue * baseForce;
+        returnForce = resistance * displacement;
 
-        // Set plunger move speed
-        if(ready) speed = pullSpeed * percentPulled;
+        // Clamp position
+        if(displacement > maxDistance && pulling)
+        {
+            rb.linearVelocity = Vector3.zero;
+            pullForce = 0;
+            returnForce = 0;
 
-        float speedRaw = speed * Time.deltaTime;
+            if(pulling && ready) primed = true;
+        } else if(displacement <= 0)
+        {
+            rb.linearVelocity = Vector3.zero;
+            transform.localPosition = startPosition;
 
-        // Move
-        transform.localPosition = Vector3.MoveTowards(currentPos, new Vector3(startPos.x, startPos.y, primedPos), speedRaw);
+            if(!pulling) ready = true;
+        }
+
+        // Apply forces
+        rb.AddRelativeForce(Vector3.forward * pullForce);
+        rb.AddRelativeForce(Vector3.forward * returnForce);
     }
 
     private void Launch()
     {
-        primed = false;
-        ready = false;
-        speed = launchSpeed;
         Debug.Log("Launched!");
     }
 
@@ -135,15 +160,5 @@ public class Plunger : MonoBehaviour
     public float GetPullValue()
     {
         return pullValue;
-    }
-
-    public float GetCurrentPos()
-    {
-        return currentPos.x;
-    }
-
-    public float GetSpeed()
-    {
-        return speed;
     }
 }
