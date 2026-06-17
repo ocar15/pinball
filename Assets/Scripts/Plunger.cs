@@ -4,62 +4,63 @@ using System;
 
 public class Plunger : MonoBehaviour
 {
-    
-
+    public enum PlungerState {READY, PULLING, RELEASED, PRIMED, LAUNCHING}
 
     InputAction pullAction;
     
     private BoxCollider boxCollider;
     private Rigidbody rb;
-    private ConfigurableJoint configJoint;
-    [SerializeField] private DebugManager debugManager;
+    public Collider plungerWall;
+    public DebugManager debugManager;
 
-    private Vector3 scale;
     private Vector3 startPosition;
+    private Vector3 currentPosition;
 
+    private PlungerState state;
     private int steps = 6;
-    private bool ready;
-    private bool pulling;
-    private bool primed;
-    private float currentTime;
 
     private float pullValueRaw;
     private float pullValue;
-    private float prevPullValue;
-    private Vector3 currentPosition;
+    private float pullValueMax;
     private float percentPulled;
 
-    public float resistance = -20;
-    public float baseForce = 1;
-    private float pullForce;
-    private float returnForce;
     private float displacement;
-    private float maxDistance;
+    private float targetDisplacement;
+    private float stopPercentage = 0.8f;
+
+    private float speed;
+    public float pullSpeed;
+    public float returnSpeed;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {   
+        // Get components & actions
         boxCollider = gameObject.GetComponent<BoxCollider>();
         rb = gameObject.GetComponent<Rigidbody>();
-        configJoint = gameObject.GetComponent<ConfigurableJoint>();
-
         pullAction = InputSystem.actions.FindAction("Pull Plunger");
 
-        scale = gameObject.transform.localScale;
+        // Initialize values
+        state = PlungerState.READY;
+        startPosition = transform.position;
+        Debug.Log(startPosition);
+        pullValueMax = 0;
 
-        currentTime = 0;
-        startPosition = transform.localPosition;
+        // Ignore plunger wall collision
+        Physics.IgnoreCollision(plungerWall, GetComponent<Collider>());
     }
 
     // Update is called once per frame
     void Update()
     {
         HandlePull();
+        HandleClamping();
     }
 
     void FixedUpdate()
     {
-        HandlePhysics();
+        HandleMove();
     }
 
     private void HandlePull()
@@ -71,85 +72,60 @@ public class Plunger : MonoBehaviour
         // Pull value = raw input mapped to # of steps
         pullValue = (int) Math.Ceiling((decimal) (pullValueRaw * steps));
         percentPulled = pullValue/steps;
-        
-        // Pulling logic
-        pulling = pullValue > 0;
 
-        // Timer logic
-        if (pulling)  currentTime += Time.deltaTime;
-        else currentTime = 0;
-
-        // Launching
-        if(primed && pullValue == 0)
+        if(pullValue > pullValueMax)
         {
-            ready = false;
-            primed = false;
-            pulling = false;
-            Launch();
+            pullValueMax = pullValue;
         }
-
-        // Store pullValue
-        prevPullValue = pullValue;
     }
 
-    private void HandlePhysics()
+    private void HandleMove()
     {
-        // Get max distance
-        maxDistance = boxCollider.size.z;
-
-        // Get displacement
-        currentPosition = transform.localPosition;
+        currentPosition = transform.position;
         displacement = currentPosition.z - startPosition.z;
+        targetDisplacement = boxCollider.size.z * percentPulled * stopPercentage;
 
-        // Calculate forces
-        pullForce = pullValue * baseForce;
-        returnForce = resistance * displacement;
-
-        // Clamp position
-        if(displacement > maxDistance && pulling)
-        {
-            rb.linearVelocity = Vector3.zero;
-            pullForce = 0;
-            returnForce = 0;
-
-            if(pulling && ready) primed = true;
-        } else if(displacement <= 0)
-        {
-            rb.linearVelocity = Vector3.zero;
-            transform.localPosition = startPosition;
-
-            if(!pulling) ready = true;
+        switch (state) {
+            case PlungerState.READY:
+                speed = 0;
+                if(pullValue > 0) state = PlungerState.PULLING;
+                break;
+            case PlungerState.PULLING:
+                speed = pullSpeed;
+                if(pullValue < pullValueMax) state = PlungerState.RELEASED;
+                if(displacement >= targetDisplacement && percentPulled > 0.2) state = PlungerState.PRIMED;
+                break;
+            case PlungerState.RELEASED:
+                speed = returnSpeed;
+                if(pullValueRaw > 0)
+                {
+                    pullValueMax = pullValue;
+                    state = PlungerState.PULLING;
+                }
+                if(displacement <= 0) state = PlungerState.READY;
+                break;
+            case PlungerState.PRIMED:
+                speed = 0;
+                if(pullValue < pullValueMax) state = PlungerState.LAUNCHING;
+                break;
+            case PlungerState.LAUNCHING:
+                speed = returnSpeed;
+                if(displacement <= 0) state = PlungerState.READY;
+                break;
         }
 
-        // Apply forces
-        rb.AddRelativeForce(Vector3.forward * pullForce);
-        rb.AddRelativeForce(Vector3.forward * returnForce);
+        rb.MovePosition(rb.position + (transform.forward * speed * Time.deltaTime));
     }
 
-    private void Launch()
+    private void HandleClamping()
     {
-        Debug.Log("Launched!");
+        
     }
 
     // Getters
-    public bool IsReady()
+    public PlungerState GetState()
     {
-        return ready;
-    }
-
-    public bool IsPulling()
-    {
-        return pulling;
-    }
-
-    public bool IsPrimed()
-    {
-        return primed;
-    }
-
-    public float GetTimer()
-    {
-        return currentTime;
+        return state;
     }
 
     public float GetPullValueRaw()
@@ -160,5 +136,15 @@ public class Plunger : MonoBehaviour
     public float GetPullValue()
     {
         return pullValue;
+    }
+
+    public float GetPercentPulled()
+    {
+        return percentPulled;
+    }
+
+    public float GetSpeed()
+    {
+        return speed;
     }
 }

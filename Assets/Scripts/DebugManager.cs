@@ -22,10 +22,8 @@ public class DebugManager : MonoBehaviour
 
         // Plunger stats
         debugText.text += $"Plunger\n";
-        debugText.text += $"ready: {plunger.IsReady()}\n";
-        debugText.text += $"pulling: {plunger.IsPulling()}\n";
-        debugText.text += $"primed: {plunger.IsPrimed()}\n";
-        debugText.text += $"pullValueRaw: {plunger.GetPullValueRaw()}\n";
-        debugText.text += $"pullValue: {plunger.GetPullValue()}\n";
+        debugText.text += $"state: {plunger.GetState()}\n";
+        debugText.text += $"force: {plunger.GetSpeed()}\n";
+        debugText.text += $"percentPulled: {plunger.GetPercentPulled()}\n";
     }
 }
