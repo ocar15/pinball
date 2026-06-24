@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92f8bdf0369868a49992f5ff9dd21428, type: 3}
+  m_Name: Default Table Data
+  m_EditorClassIdentifier: Assembly-CSharp::TableData
+  <Name>k__BackingField: bart the table
+  <Grid>k__BackingField: {fileID: 7308079446893616482, guid: f48b3c8412dc78d4283d30e2616cff4d, type: 3}
+  <Rotation>k__BackingField: {x: -6.5, y: 0, z: 0}

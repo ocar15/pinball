@@ -6,12 +6,17 @@ using Unity.Mathematics;
 
 public class PlacementSystem : MonoBehaviour
 {
-    public const float CellSize = 1f;
+    public const float CellSize = .3f;
     [SerializeField] private WidgetData widgetData;
     [SerializeField] private WidgetPreview previewPrefab;
     [SerializeField] private Widget widgetPrefab;
-    [SerializeField] private WidgetGrid grid;
+    private WidgetGrid grid;
     private WidgetPreview preview;
+
+    public void Setup(WidgetGrid grid)
+    {
+        this.grid = grid;
+    }
 
     private void Update()
     {
@@ -33,25 +38,24 @@ public class PlacementSystem : MonoBehaviour
     private void HandlePreview(Vector3 mouseWorldPosition)
     {
         preview.transform.position = mouseWorldPosition;
-        List<Vector3> placePosition = preview.WidgetModel.GetAllBuildingPositions();
-        bool canBuild = grid.CanPlace(placePosition);
-        if (canBuild)
-        {
-            preview.transform.position = GetSnappedPosition(placePosition);
-            preview.ChangeState(WidgetPreview.WidgetPreviewState.POSITIVE);
-            if (Input.GetMouseButtonDown(0))
-            {
-                PlaceWidget(placePosition);
-            }
-        }
-        else
-        {
-            preview.ChangeState(WidgetPreview.WidgetPreviewState.NEGATIVE);
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            preview.Rotate(90);
-        }
+        bool canBuild = grid.CanPlace(preview);
+        // if (canBuild)
+        // {
+        //     preview.transform.position = GetSnappedPosition(placePosition);
+        //     preview.ChangeState(WidgetPreview.WidgetPreviewState.POSITIVE);
+        //     if (Input.GetMouseButtonDown(0))
+        //     {
+        //         PlaceWidget(placePosition);
+        //     }
+        // }
+        // else
+        // {
+        //     preview.ChangeState(WidgetPreview.WidgetPreviewState.NEGATIVE);
+        // }
+        // if (Input.GetKeyDown(KeyCode.R))
+        // {
+        //     preview.Rotate(90);
+        // }
     }
 
     private void PlaceWidget(List<Vector3> widgetPositions)
@@ -61,15 +65,6 @@ public class PlacementSystem : MonoBehaviour
         grid.SetWidget(widget, widgetPositions);
         Destroy(preview.gameObject);
         preview = null;
-    }
-
-    private Vector3 GetSnappedPosition(List<Vector3> allBuildingPositions)
-    {
-        List<int> xs = allBuildingPositions.Select(p => Mathf.FloorToInt(p.x)).ToList();
-        List<int> zs = allBuildingPositions.Select(p => Mathf.FloorToInt(p.z)).ToList();
-        float centerX = (xs.Min() + xs.Max()) / 2f + CellSize / 2f;
-        float centerZ = (zs.Min() + zs.Max()) / 2f + CellSize / 2f;
-        return new(centerX, 0, centerZ);
     }
 
     private Vector3 GetMouseWorldPosition()

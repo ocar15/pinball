@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 public class WidgetGrid : MonoBehaviour
 {
-    [SerializeField] private int width;
-    [SerializeField] private int height;
+    [SerializeField] private int cellWidth;
+    [SerializeField] private int cellHeight;
     public WidgetGridCell[,] grid;
 
     public void Start()
     {
-        grid = new WidgetGridCell[width, height];
+        grid = new WidgetGridCell[cellWidth, cellHeight];
         for(int x = 0; x < grid.GetLength(0); x++)
         {
             for(int y = 0; y < grid.GetLength(1); y++)
@@ -28,14 +28,12 @@ public class WidgetGrid : MonoBehaviour
         }   
     }
 
-    public bool CanPlace(List<Vector3> allWidgetPositions)
+    public bool CanPlace(WidgetPreview widgetPreview)
     {
-        foreach(var p in allWidgetPositions)
-        {
-            (int x, int y) = WorldToGridPosition(p);
-            if(x < 0 || x >= width || y < 0 || y >= height) return false;
-            if(!grid[x, y].IsEmpty()) return false;
-        }
+        WidgetData widgetData = widgetPreview.Data;
+        Vector3 position = widgetPreview.transform.position;
+        Debug.Log("Hello");
+        // TODO: FIX!!!
         return true;
     }
 
@@ -49,21 +47,35 @@ public class WidgetGrid : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
-        if(PlacementSystem.CellSize <= 0 || width <= 0 || height <= 0) return;
-        Vector3 origin = transform.position;
+        if(PlacementSystem.CellSize <= 0 || cellWidth <= 0 || cellHeight <= 0) return;
+        Vector3 origin = transform.localPosition;
 
-        for(int y = 0; y <= height; y++)
+        for(int y = 0; y <= cellHeight; y++)
         {
-            Vector3 start = origin + new Vector3(0, .01f, y * PlacementSystem.CellSize);
-            Vector3 end = origin + new Vector3(width * PlacementSystem.CellSize, .01f, y * PlacementSystem.CellSize);
+            Vector3 start = origin + new Vector3(0, 0, y * PlacementSystem.CellSize);
+            Vector3 end = origin + new Vector3(cellWidth * PlacementSystem.CellSize, 0, y * PlacementSystem.CellSize);
+            start = transform.TransformDirection(start);
+            end = transform.TransformDirection(end);
             Gizmos.DrawLine(start, end);
         }
-        for(int x = 0; x <= width; x++)
+        for(int x = 0; x <= cellWidth; x++)
         {
-            Vector3 start = origin + new Vector3(x * PlacementSystem.CellSize, .01f, 0);
-            Vector3 end = origin + new Vector3(x * PlacementSystem.CellSize, .01f, height * PlacementSystem.CellSize);
+            Vector3 start = origin + new Vector3(x * PlacementSystem.CellSize, 0, 0);
+            Vector3 end = origin + new Vector3(x * PlacementSystem.CellSize, 0, cellHeight * PlacementSystem.CellSize);
+            start = transform.TransformDirection(start);
+            end = transform.TransformDirection(end);
             Gizmos.DrawLine(start, end);
         }
+    }
+
+    public float GetWidth()
+    {
+        return cellWidth * PlacementSystem.CellSize;
+    }
+
+    public float GetHeight()
+    {
+        return cellHeight * PlacementSystem.CellSize;
     }
 }
 
