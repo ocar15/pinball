@@ -19,7 +19,10 @@ public class WidgetPreview : MonoBehaviour
         Data = data;
         RotateStep = data.RotateStep;
         transform.parent = parent.transform;
-        WidgetModel = Instantiate(data.Model, transform.position, Quaternion.identity, transform);
+        Vector3 modelPosition = new(transform.position.x + (data.Width * WidgetGridCell.Size / 2),
+                                    transform.position.y,
+                                    transform.position.z + (data.Height * WidgetGridCell.Size / 2));
+        WidgetModel = Instantiate(data.Model, modelPosition, Quaternion.identity, transform);
         renderers.AddRange(WidgetModel.GetComponentsInChildren<Renderer>());
         colliders.AddRange(WidgetModel.GetComponentsInChildren<Collider>());
         foreach(var collider in colliders)
@@ -53,5 +56,20 @@ public class WidgetPreview : MonoBehaviour
             }
             renderer.materials = mats;
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        // Draw boundary box
+        Vector3 bottomLeft = transform.TransformPoint(new Vector3(0, 0, 0));
+        Vector3 bottomRight = transform.TransformPoint(new Vector3( Data.Width * WidgetGridCell.Size, 0, 0));
+        Vector3 topLeft = transform.TransformPoint(new Vector3(0, 0, Data.Height * WidgetGridCell.Size));
+        Vector3 topRight = transform.TransformPoint(new Vector3(Data.Width * WidgetGridCell.Size, 0, Data.Height * WidgetGridCell.Size));
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(bottomLeft, bottomRight);
+        Gizmos.DrawLine(bottomRight, topRight);
+        Gizmos.DrawLine(topRight, topLeft);
+        Gizmos.DrawLine(topLeft, bottomLeft);
     }
 }

@@ -30,8 +30,8 @@ public class WidgetGrid : MonoBehaviour
 
     private (int x, int y) WorldToGridPosition(Vector3 worldPosition)
     {
-        int x = Mathf.FloorToInt((worldPosition - transform.position).x / PlacementSystem.CellSize);
-        int y = Mathf.FloorToInt((worldPosition - transform.position).y / PlacementSystem.CellSize);
+        int x = Mathf.FloorToInt((worldPosition - transform.position).x / WidgetGridCell.Size);
+        int y = Mathf.FloorToInt((worldPosition - transform.position).y / WidgetGridCell.Size);
         return (x, y);
     }
 
@@ -43,40 +43,41 @@ public class WidgetGrid : MonoBehaviour
     private void DrawGridLines()
     {
         Gizmos.color = Color.yellow;
-        if(PlacementSystem.CellSize <= 0 || cellWidth <= 0 || cellHeight <= 0) return;
+        if(WidgetGridCell.Size <= 0 || cellWidth <= 0 || cellHeight <= 0) return;
         Vector3 origin = transform.localPosition;
 
         for(int y = 0; y <= cellHeight; y++)
         {
-            Vector3 start = origin + new Vector3(0, 0, y * PlacementSystem.CellSize);
-            Vector3 end = origin + new Vector3(cellWidth * PlacementSystem.CellSize, 0, y * PlacementSystem.CellSize);
-            start = transform.TransformDirection(start);
-            end = transform.TransformDirection(end);
+            Vector3 start = origin + new Vector3(0, 0, y * WidgetGridCell.Size);
+            Vector3 end = origin + new Vector3(cellWidth * WidgetGridCell.Size, 0, y * WidgetGridCell.Size);
+            start = transform.TransformPoint(start);
+            end = transform.TransformPoint(end);
             Gizmos.DrawLine(start, end);
         }
         for(int x = 0; x <= cellWidth; x++)
         {
-            Vector3 start = origin + new Vector3(x * PlacementSystem.CellSize, 0, 0);
-            Vector3 end = origin + new Vector3(x * PlacementSystem.CellSize, 0, cellHeight * PlacementSystem.CellSize);
-            start = transform.TransformDirection(start);
-            end = transform.TransformDirection(end);
+            Vector3 start = origin + new Vector3(x * WidgetGridCell.Size, 0, 0);
+            Vector3 end = origin + new Vector3(x * WidgetGridCell.Size, 0, cellHeight * WidgetGridCell.Size);
+            start = transform.TransformPoint(start);
+            end = transform.TransformPoint(end);
             Gizmos.DrawLine(start, end);
         }
     }
 
     public float GetWidth()
     {
-        return cellWidth * PlacementSystem.CellSize;
+        return cellWidth * WidgetGridCell.Size;
     }
 
     public float GetHeight()
     {
-        return cellHeight * PlacementSystem.CellSize;
+        return cellHeight * WidgetGridCell.Size;
     }
 }
 
 public class WidgetGridCell
 {
+    public const float Size = .3f;
     private Widget widget;
 
     public void SetWidget(Widget widget)

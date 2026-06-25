@@ -9,7 +9,6 @@ public class PlacementSystem : MonoBehaviour
     InputAction rotateNegative;
     InputAction debugOne;
 
-    public const float CellSize = .3f;
     [SerializeField] private WidgetData widgetData;
     [SerializeField] private WidgetPreview previewPrefab;
     [SerializeField] private Widget widgetPrefab;
@@ -104,9 +103,9 @@ public class PlacementSystem : MonoBehaviour
             mousePosition.z >= grid.transform.localPosition.z &&
             mousePosition.z <= grid.transform.localPosition.z + grid.GetHeight())
         {
-            float pointerX = mousePosition.x - (mousePosition.x % CellSize);
-            float pointerZ = mousePosition.z - (mousePosition.z % CellSize);
-            return new(pointerX, 1, pointerZ);
+            float pointerX = mousePosition.x - (mousePosition.x % WidgetGridCell.Size);
+            float pointerZ = mousePosition.z - (mousePosition.z % WidgetGridCell.Size);
+            return new(pointerX, 0, pointerZ);
         }
         
         // Otherwise, set to mouse world position
