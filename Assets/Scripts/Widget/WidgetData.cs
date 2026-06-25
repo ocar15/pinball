@@ -10,4 +10,5 @@ public class WidgetData : ScriptableObject
     [field: SerializeField] public WidgetModel Model {get; private set;}
     [field: SerializeField] public int Width {get; private set;}
     [field: SerializeField] public int Height {get; private set;}
+    [field: SerializeField] public int RotateStep {get; private set;}
 }

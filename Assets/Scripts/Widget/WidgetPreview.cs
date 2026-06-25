@@ -12,10 +12,13 @@ public class WidgetPreview : MonoBehaviour
     public WidgetModel WidgetModel{get; private set;}
     private List<Renderer> renderers = new();
     private List<Collider> colliders = new();
+    public int RotateStep{get; private set;}
 
-    public void Setup(WidgetData data)
+    public void Setup(WidgetData data, GameObject parent)
     {
         Data = data;
+        RotateStep = data.RotateStep;
+        transform.parent = parent.transform;
         WidgetModel = Instantiate(data.Model, transform.position, Quaternion.identity, transform);
         renderers.AddRange(WidgetModel.GetComponentsInChildren<Renderer>());
         colliders.AddRange(WidgetModel.GetComponentsInChildren<Collider>());

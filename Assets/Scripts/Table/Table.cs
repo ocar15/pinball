@@ -8,9 +8,10 @@ public class Table : MonoBehaviour
     public WidgetGrid grid => data.Grid;
     public Vector3 rotation => data.Rotation;
 
-    public void Setup(TableData data)
+    public void Setup(TableData data, GameObject parent)
     {
         this.data = data;
+        transform.parent = parent.transform;
         grid.transform.position = transform.position;
         GetComponent<MeshFilter>().mesh = GenerateMesh(grid);
         gameObject.transform.Rotate(rotation);

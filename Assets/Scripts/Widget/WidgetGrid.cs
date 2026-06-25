@@ -28,15 +28,6 @@ public class WidgetGrid : MonoBehaviour
         }   
     }
 
-    public bool CanPlace(WidgetPreview widgetPreview)
-    {
-        WidgetData widgetData = widgetPreview.Data;
-        Vector3 position = widgetPreview.transform.position;
-        Debug.Log("Hello");
-        // TODO: FIX!!!
-        return true;
-    }
-
     private (int x, int y) WorldToGridPosition(Vector3 worldPosition)
     {
         int x = Mathf.FloorToInt((worldPosition - transform.position).x / PlacementSystem.CellSize);
@@ -45,6 +36,11 @@ public class WidgetGrid : MonoBehaviour
     }
 
     private void OnDrawGizmos()
+    {
+        DrawGridLines();
+    }
+
+    private void DrawGridLines()
     {
         Gizmos.color = Color.yellow;
         if(PlacementSystem.CellSize <= 0 || cellWidth <= 0 || cellHeight <= 0) return;

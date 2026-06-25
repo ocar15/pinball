@@ -294,7 +294,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 50
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -320,13 +320,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.21034378, y: 0, z: 0, w: 0.97762746}
-  m_LocalPosition: {x: 0, y: 3.09, z: -5}
+  m_LocalRotation: {x: 0.32556805, y: 0, z: 0, w: 0.9455186}
+  m_LocalPosition: {x: 3, y: 6, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 24.285, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 38, y: 0, z: 0}
 --- !u!114 &330585547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -701,6 +701,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   world: {fileID: 792816564}
+  placementSystem: {fileID: 1091890865}
   tableData: {fileID: 11400000, guid: cf892e7395e7884438ac5af57e751505, type: 2}
   tablePrefab: {fileID: 8215886041083275923, guid: 39e1cb97dab5b354da3a3c91264447ee, type: 3}
 --- !u!1 &792816564
@@ -1096,7 +1097,6 @@ MonoBehaviour:
   widgetData: {fileID: 11400000, guid: 78626966ad40f07459bbb4259a64a7bc, type: 2}
   previewPrefab: {fileID: 4935367970271935548, guid: 38d38983ef946ce48b2664e4e089c4ab, type: 3}
   widgetPrefab: {fileID: 4578808185791490556, guid: bed66b13ebf99a24c920406df619b182, type: 3}
-  grid: {fileID: 0}
 --- !u!1 &1124297357 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: b670fa0fe498bb34ba4901aaf7f79721, type: 3}
