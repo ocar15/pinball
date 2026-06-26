@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Default Table Data
   m_EditorClassIdentifier: Assembly-CSharp::TableData
   <Name>k__BackingField: bart the table
-  <Grid>k__BackingField: {fileID: 7308079446893616482, guid: f48b3c8412dc78d4283d30e2616cff4d, type: 3}
+  <Width>k__BackingField: 21
+  <Height>k__BackingField: 43
   <Rotation>k__BackingField: {x: -6.5, y: 0, z: 0}

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
 using System.Collections.Generic;
 
 public class PlacementSystem : MonoBehaviour
@@ -12,9 +13,9 @@ public class PlacementSystem : MonoBehaviour
     [SerializeField] private WidgetData widgetData;
     [SerializeField] private WidgetPreview previewPrefab;
     [SerializeField] private Widget widgetPrefab;
+
     private Table table;
     private WidgetPreview preview;
-    private Vector3 pointerPosition;
 
     public void Setup(Table table)
     {
@@ -32,12 +33,12 @@ public class PlacementSystem : MonoBehaviour
     private void Update()
     {
         Vector3 mousePosition = GetMouseWorldPosition();
-        Debug.Log(mousePosition);
-        Vector3 pointerPosition = GetPointerPosition(mousePosition);
+        Vector2Int gridPosition = GetGridPosition(mousePosition);
+        Vector3 pointerPosition = GetPointerPosition(mousePosition, gridPosition);
 
         if(preview != null)
         {
-            HandlePreview(pointerPosition);
+            HandlePreview(pointerPosition, gridPosition);
         }
         else
         {
@@ -48,10 +49,10 @@ public class PlacementSystem : MonoBehaviour
         }
     }
 
-    private void HandlePreview(Vector3 pointerPosition)
+    private void HandlePreview(Vector3 pointerPosition, Vector2Int gridPosition)
     {
         preview.transform.localPosition = pointerPosition;
-        if (CanPlace(preview, table.grid))
+        if (CanPlace(preview, gridPosition))
         {
             preview.ChangeState(WidgetPreview.WidgetPreviewState.POSITIVE);
             if (interact.WasPerformedThisFrame())
@@ -69,8 +70,20 @@ public class PlacementSystem : MonoBehaviour
         else if (rotateNegative.WasPerformedThisFrame()) preview.Rotate(preview.RotateStep * -1);
     }
 
-    private bool CanPlace(WidgetPreview preview, WidgetGrid grid)
+    private bool CanPlace(WidgetPreview preview, Vector2Int gridPosition)
     {
+        if(gridPosition.x < 0 || gridPosition.x >= table.grid.GetWidth()
+        || gridPosition.y < 0 || gridPosition.y >= table.grid.GetHeight()) return false;
+
+        // Using grid position, determine if cells in range are full or not
+        WidgetGridCell[,] grid = table.grid.GetGrid();
+        for(int i = gridPosition.x; i < gridPosition.x + preview.Data.Width; i++)
+        {
+            for(int j = gridPosition.y; j < gridPosition.y + preview.Data.Height; j++)
+            {
+                if(!grid[i,j].IsEmpty()) return false;
+            }
+        }
         return true;
     }
 
@@ -94,22 +107,34 @@ public class PlacementSystem : MonoBehaviour
         return Vector3.zero;
     }
 
-    private Vector3 GetPointerPosition(Vector3 mousePosition)
+    private Vector3 GetPointerPosition(Vector3 mousePosition, Vector2 gridPosition)
     {
-        WidgetGrid grid = table.grid;
-        // If mouse is over grid, snap to it
-        if(mousePosition.x >= grid.transform.localPosition.x &&
-            mousePosition.x <= grid.transform.localPosition.x + grid.GetWidth() &&
-            mousePosition.z >= grid.transform.localPosition.z &&
-            mousePosition.z <= grid.transform.localPosition.z + grid.GetHeight())
+        if(gridPosition.x >= 0 && gridPosition.y >= 0)
         {
-            float pointerX = mousePosition.x - (mousePosition.x % WidgetGridCell.Size);
-            float pointerZ = mousePosition.z - (mousePosition.z % WidgetGridCell.Size);
-            return new(pointerX, 0, pointerZ);
+            float x = gridPosition.x * WidgetGridCell.Size;
+            float z = gridPosition.y * WidgetGridCell.Size;
+
+            return new(x, 0, z);
         }
         
         // Otherwise, set to mouse world position
+        // Debug.Log(mousePosition);
         return mousePosition;
+    }
+
+    private Vector2Int GetGridPosition(Vector3 mousePosition)
+    {
+        if(mousePosition.x >= table.transform.localPosition.x &&
+            mousePosition.x <= table.transform.localPosition.x + table.GetWidth() &&
+            mousePosition.z >= table.transform.localPosition.z &&
+            mousePosition.z <= table.transform.localPosition.z + table.GetHeight())
+        {
+            int x = (int) Mathf.Floor(mousePosition.x / WidgetGridCell.Size);
+            int y = (int) Mathf.Floor(mousePosition.z / WidgetGridCell.Size);
+
+            return new(x, y);
+        }
+        return new(-1, -1);
     }
 
     private WidgetPreview CreatePreview(WidgetData data, Vector3 position)

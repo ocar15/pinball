@@ -31,8 +31,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 5478947023429081637}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8215886041083275923
@@ -80,7 +79,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -876546973899608171, guid: a803e41e7c313764cb22b8e3b0598696, type: 3}
+  - {fileID: 2100000, guid: a04f38bf559627445b3f168c6afd985b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -104,65 +103,3 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1001 &1531048007404324154
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 9220561860189565993}
-    m_Modifications:
-    - target: {fileID: 2075372567441344518, guid: f48b3c8412dc78d4283d30e2616cff4d, type: 3}
-      propertyPath: m_Name
-      value: WidgetGrid
-      objectReference: {fileID: 0}
-    - target: {fileID: 6428397291413643039, guid: f48b3c8412dc78d4283d30e2616cff4d, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6428397291413643039, guid: f48b3c8412dc78d4283d30e2616cff4d, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6428397291413643039, guid: f48b3c8412dc78d4283d30e2616cff4d, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6428397291413643039, guid: f48b3c8412dc78d4283d30e2616cff4d, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6428397291413643039, guid: f48b3c8412dc78d4283d30e2616cff4d, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6428397291413643039, guid: f48b3c8412dc78d4283d30e2616cff4d, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6428397291413643039, guid: f48b3c8412dc78d4283d30e2616cff4d, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6428397291413643039, guid: f48b3c8412dc78d4283d30e2616cff4d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6428397291413643039, guid: f48b3c8412dc78d4283d30e2616cff4d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6428397291413643039, guid: f48b3c8412dc78d4283d30e2616cff4d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: f48b3c8412dc78d4283d30e2616cff4d, type: 3}
---- !u!4 &5478947023429081637 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6428397291413643039, guid: f48b3c8412dc78d4283d30e2616cff4d, type: 3}
-  m_PrefabInstance: {fileID: 1531048007404324154}
-  m_PrefabAsset: {fileID: 0}

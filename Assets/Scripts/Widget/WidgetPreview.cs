@@ -62,7 +62,7 @@ public class WidgetPreview : MonoBehaviour
     {
         // Draw boundary box
         Vector3 bottomLeft = transform.TransformPoint(new Vector3(0, 0, 0));
-        Vector3 bottomRight = transform.TransformPoint(new Vector3( Data.Width * WidgetGridCell.Size, 0, 0));
+        Vector3 bottomRight = transform.TransformPoint(new Vector3(Data.Width * WidgetGridCell.Size, 0, 0));
         Vector3 topLeft = transform.TransformPoint(new Vector3(0, 0, Data.Height * WidgetGridCell.Size));
         Vector3 topRight = transform.TransformPoint(new Vector3(Data.Width * WidgetGridCell.Size, 0, Data.Height * WidgetGridCell.Size));
 
